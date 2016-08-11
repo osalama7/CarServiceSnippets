@@ -1,0 +1,132 @@
+
+<style>
+    .carddemoBasicUsage .card-media {
+        background-color: #999999; }
+</style>
+
+<div class="md-toolbar-tools">
+    <h3>
+        <span>Job Details</span>
+    </h3>
+</div>
+
+<div ng-controller="JobsController" ng-init="findOne()">
+
+    <md-content class="md-padding" layout="row" layout-wrap="" layout-align="center start" style="background: #ecf0f1">
+
+        <div flex="50" layout="column">
+            <div ng-show="error">
+                <strong ng-bind="error"></strong>
+            </div>
+            <md-card>
+                <md-card-title style="background-color: #999999;">
+                    <md-card-title-text class="md-padding">
+                        <span class="md-headline ng-cloak"  ng-bind="job.title">{{job.title}}</span>
+                        <span></span>
+                        <span class="md-headline" ng-bind="job.scenter.name"></span>
+                    </md-card-title-text>
+
+
+                    <md-card-title-media>
+                        <md-toolbar ng-class="setJobStatusbgc(job.jstate.sname)">
+                            <div class="md-toolbar-tools">
+                                <h2 class="md-flex ng-cloak" ng-cloak="">{{job.jstate.sname}}</h2>
+                            </div>
+                            <div layout-padding="" class="md-caption">Assigned To: <span layout-align="start start" class="md-caption" data-ng-bind="job.assignedTo.username">{{job.assignedTo.username}}</span></div>
+                            <div layout-padding="" class="md-caption">Reserved At
+                                <p layout-align="start end" class="md-caption" ng-bind="job.reservedAt | date:'dd/mm/yy h:mma'"></p>
+                            </div>
+                        </md-toolbar>
+                        <div class="md-media-sm card-media"></div>
+                    </md-card-title-media>
+                </md-card-title>
+                <md-card-content>
+                    <md-content class="md-padding" layout="row" ng-cloak="">
+                        <p>Tasks</p>
+                    <md-chips ng-repeat="task in job.tasks" layout="column" ng-cloak="">
+                    <md-chip ng-bind="task.title">{{task.title}}</md-chip>
+                    </md-chips>
+                    </md-content>
+                    <!--Customer info-->
+                    <md-list-item class="md-3-line">
+                        <div class="md-list-item-text" layout="column">
+                            <p layout-align="" class="md-body-2">{{job.scenter.name}} </p>
+                            <h3>Customer Name: {{ job.customerName }}</h3>
+                            <h4>Customer Phone: {{ job.customerPhone }}</h4>
+                            <p>Vehicle number: {{ job.vnumber }}</p>
+                        </div>
+                    </md-list-item>
+
+                    <!--Job related info-->
+                    <div layout-padding="" class="md-caption"> Job Lift:
+                    <span layout-align="start start" layout-padding="" class="md-body-1" ng-bind="job.lift.number">{{job.lift.number}}</span>
+                    </div>
+
+                    <div ng-controller="JstatesController" ng-init="find()" class="md-body-1">Status
+                        <select ng-options="jstate.sname for jstate in jstates track by jstate._id" ng-model="job.jstate"></select>
+                    </div>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button ng-href="/#!/jobs/{{job._id}}/edit">edit</md-button>
+                    <md-button ng-click="delete();">delete</md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+    </md-content>
+
+    <!--Job tasks controls-->
+
+    <form ng-submit="updateTstates()" novalidate style="background-color: transparent">
+        <md-input-container layout="row" layout-sm="column" layout-align="center center" layout-wrap="" style="background-color: transparent">
+            <md-button class="md-raised md-primary" value="Update">update</md-button>
+        </md-input-container>
+    <md-content flex class="md-padding" layout="row" layout-margin style="background: #ecf0f1">
+        <md-card ng-repeat="task in job.tasks" flex="33" layout="column" layout-wrap="" layout-align="start center" layout-padding="">
+            <md-card-title>
+                <md-card-title-text class="md-padding">
+                    <label>Task Title</label>
+                    <span class="md-headline" ng-bind="task.title">{{task.title}}</span>
+                    <span class="md-subhead" ng-bind="task.creator.username">{{task.creator.username}}</span>
+                </md-card-title-text>
+                <md-card-title-media>
+                    <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+            </md-card-title>
+            <md-card-content>
+                <md-card-content>
+                    <md-subheader>Labour Time</md-subheader>
+                    <span class="md-subhead" ng-bind="task.labour_time">{{task.labour_time}} Hours</span><md-text-float> Hours</md-text-float>
+                </md-card-content>
+                <md-card-content>
+                    <md-subheader>GLC</md-subheader>
+                    <span class="md-subhead" ng-bind="task.GLC">{{task.GLC}}</span>
+                </md-card-content>
+            </md-card-content>
+            <md-card-footer>
+                <md-card-actions layout="row" layout-align="end center" layout-padding="">
+
+                    <div ng-init="getTStates()">
+                    <div ng-controller="UsersController" ng-init="find()">
+                    <div ng-controller="LiftsController" ng-init="find()">
+
+                            <md-subheader>Assign</md-subheader>
+                    <select ng-options="user.username for user in users track by user._id" ng-model="assignedUser"></select>
+
+                            <md-subheader>Lift</md-subheader>
+                    <select ng-options="lift.number for lift in lifts track by lift._id" ng-model="tasklift"></select>
+
+                            <md-subheader>Task State</md-subheader>
+                    <select ng-options="tstate.tsname for tstate in taskStates track by tstate._id" ng-model="taskstate" ng-change="addtoTupdates(taskstate, task, assignedUser, tasklift ,updatedTasksList)" ng-if="1"></select>
+
+                    </div>
+                    </div>
+                    </div>
+                </md-card-actions>
+            </md-card-footer>
+        </md-card>
+
+        </form>
+
+    </md-content>
+</div>
+
